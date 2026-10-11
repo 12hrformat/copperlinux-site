@@ -2,6 +2,7 @@ var ROUTES = {
     '/':              pageHome,
     '/daily-driving': pageDaily,
     '/security':      pageSecurity,
+    '/downloads':     pageDownloads,
     '/tools':         pageTools,
     '/contributions': pageContributions,
     '/contributors':  pageContributors,
@@ -12,6 +13,7 @@ var TITLES = {
     '/':              'Copper Linux - Official Website',
     '/daily-driving': 'Copper Linux - Daily Driving Mode',
     '/security':      'Deadlight Linux - Security Edition',
+    '/downloads':     'Downloads - Copper Linux',
     '/tools':         'Tools - Copper Linux / Deadlight',
     '/contributions': 'Contribute - Copper Linux',
     '/contributors':  'Team - Copper Linux',
@@ -43,6 +45,7 @@ var NAV_IDS = {
     '/':              'nav-home',
     '/daily-driving': 'nav-daily',
     '/security':      'nav-deadlight',
+    '/downloads':     'nav-downloads',
     '/tools':         'nav-tools',
     '/contributions': 'nav-contributions',
     '/contributors':  'nav-contributors',
@@ -538,6 +541,16 @@ function pageHome() {
     +   '<div class="section-head"><h2>Releases</h2><p class="section-sub">Published on <a href="https://github.com/12hrformat/copperlinux/releases" target="_blank">GitHub</a> by the Copper Linux team.</p></div>'
     +   '<div id="release-list" class="release-list"><p class="dim-text">Loading releases&hellip;</p></div>'
 
+    /* downloads - the home page is the only url google sees, so the
+       keyword lives here too */
+    +   '<div class="section-head"><h2>Downloads</h2><p class="section-sub">Pre-release ISOs, straight from GitHub.</p></div>'
+    +   '<div class="panel panel-default text-left">'
+    +     '<div class="panel-body">'
+    +       '<p><a href="https://github.com/12hrformat/copperlinux/releases/latest" target="_blank"><i class="fas fa-download"></i> Download the latest Copper Linux pre-release</a></p>'
+    +       '<p>Every build we cut lives on the <a href="https://github.com/12hrformat/copperlinux/releases" target="_blank">releases page</a>. No stable release yet &mdash; these are pre-releases, boot them in a VM and break them.</p>'
+    +     '</div>'
+    +   '</div>'
+
     /* about */
     +   '<div class="section-head"><h2>About</h2></div>'
     +   '<div class="panel panel-default text-left">'
@@ -563,6 +576,30 @@ function pageHome() {
     +       '<a class="btn btn-band-ghost" href="#/contributions">How to contribute</a>'
     +     '</div>'
     +   '</section>'
+    + '</div>';
+}
+
+function pageDownloads() {
+    return ''
+    + '<div class="container">'
+    +   '<div class="col-lg-12">'
+    +     '<div class="page-header page-header-title"><h1>Downloads</h1> <h2>Copper Linux</h2></div>'
+    +     '<ol class="breadcrumb"><li><a href="#/">Home</a></li><li class="active">Downloads</li></ol>'
+    +     '<div class="panel panel-default text-left">'
+    +       '<div class="panel-heading"><b>Get Copper Linux</b></div>'
+    +       '<div class="list-group-item">'
+    +         '<p><a href="https://github.com/12hrformat/copperlinux/releases/latest" target="_blank"><i class="fas fa-download"></i> Download the latest pre-release</a> &mdash; this link always resolves to whatever we cut most recently.</p>'
+    +         '<p>All releases: <a href="https://github.com/12hrformat/copperlinux/releases" target="_blank">github.com/12hrformat/copperlinux/releases</a></p>'
+    +         '<p>Build it yourself from source: <a href="https://github.com/12hrformat/copperlinux/archive/refs/heads/main.zip" target="_blank">zipped <code>main</code> branch</a></p>'
+    +       '</div>'
+    +     '</div>'
+    +     '<div class="panel panel-default text-left">'
+    +       '<div class="panel-heading"><b>How to run it</b></div>'
+    +       '<div class="list-group-item">'
+    +         '<p>Grab the ISO, attach it to a VM (VMware, VirtualBox or QEMU) with at least 2&nbsp;GB of RAM, boot from the CD and let the wizard set up your user. Everything runs from the live image &mdash; nothing gets installed unless you want it to.</p>'
+    +       '</div>'
+    +     '</div>'
+    +   '</div>'
     + '</div>';
 }
 

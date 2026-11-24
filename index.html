@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark copper-loading">
 <head>
 	<meta charset="UTF-8">
 	<script>
@@ -138,8 +138,174 @@
 	<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 	<link href="css/copper.css?v=9" rel="stylesheet">
 	<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+	<noscript><style>html.copper-loading .copper-loader{display:none!important}html.copper-loading body{overflow:auto!important}</style></noscript>
+	<style id="copper-loader-critical">
+	html.copper-loading, html.copper-loading body { height: 100%; }
+	html.copper-loading body { overflow: hidden !important; }
+	.copper-loader { position: fixed; inset: 0; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 32px; background: #000; color: #f5f1ec; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-align: center; transition: opacity .55s ease, visibility .55s ease; }
+	.copper-loader.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+	.copper-loader-mark { width: 104px; height: 104px; display: grid; place-items: center; border: 1px solid #5d2f12; color: #c67c46; font-family: Georgia, "Times New Roman", serif; font-size: 48px; font-weight: 700; letter-spacing: -.08em; box-shadow: inset 0 0 44px rgba(217,138,82,.12); }
+	.copper-loader-title { margin: 0; font-size: 11px; letter-spacing: .3em; color: #e79a58; text-transform: uppercase; }
+	.copper-loader-copy { margin: 0; max-width: 460px; font-size: 13px; line-height: 1.7; color: #b7aa9d; }
+	.copper-loader-track { width: min(78vw, 420px); height: 2px; background: #2a1a10; overflow: hidden; }
+	.copper-loader-bar { display: block; height: 100%; width: 0; background: #e79a58; box-shadow: 0 0 16px rgba(231,154,88,.55); transition: width .28s ease; }
+	.copper-loader-percent { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: #8f7a68; }
+	@media (prefers-reduced-motion: reduce) { .copper-loader, .copper-loader-bar { transition: none; } }
+	</style>
+	<script>
+	(function () {
+		var root = document.documentElement;
+		root.classList.add('copper-loading');
+
+		var started = Date.now();
+		var lastPct = 0;
+		var ticker = null;
+		var bar = null, percent = null, loader = null;
+		var state = { dom: false, video: false, videoRatio: 0, fetchTotal: 0, fetchDone: 0, pending: 0, lastFetch: 0, done: false };
+
+		function grab() {
+			loader = document.getElementById('copper-loader');
+			bar = document.getElementById('copper-loader-bar');
+			percent = document.getElementById('copper-loader-percent');
+		}
+
+		function target() {
+			var p = 0;
+			p += state.dom ? 18 : 0;
+			p += 52 * (state.video ? 1 : state.videoRatio);
+			if (state.fetchTotal) p += 30 * (state.fetchDone / state.fetchTotal);
+			else if (state.dom) p += 30;
+			return Math.min(96, Math.round(p));
+		}
+
+		function paint() {
+			var p = state.done ? 100 : Math.max(lastPct, target());
+			lastPct = p;
+			if (bar) bar.style.width = p + '%';
+			if (percent) percent.textContent = p + '%';
+		}
+
+		function ready() {
+			if (state.done || !state.dom || !state.video || state.pending > 0) return false;
+			if (state.fetchTotal && Date.now() - state.lastFetch < 350) return false;
+			return true;
+		}
+
+		function check() {
+			paint();
+			if (ready() || Date.now() - started > 10000) finish();
+		}
+
+		function finish() {
+			if (state.done) return;
+			state.done = true;
+			if (ticker) { clearInterval(ticker); ticker = null; }
+			lastPct = 100;
+			paint();
+			setTimeout(function () {
+				root.classList.remove('copper-loading');
+				if (loader) loader.classList.add('is-done');
+				setTimeout(function () {
+					if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+				}, 700);
+			}, 220);
+		}
+
+		function track(promise) {
+			if (!promise || typeof promise.then !== 'function') return;
+			state.fetchTotal++;
+			state.pending++;
+			state.lastFetch = Date.now();
+			function settle() {
+				state.fetchDone++;
+				state.pending = Math.max(0, state.pending - 1);
+				state.lastFetch = Date.now();
+				check();
+			}
+			promise.then(settle, settle);
+			paint();
+		}
+
+		var realFetch = window.fetch;
+		if (realFetch) {
+			window.fetch = function () {
+				var p = realFetch.apply(this, arguments);
+				track(p);
+				return p;
+			};
+		}
+
+		function watchVideo() {
+			var v = document.querySelector('.hero-video');
+			if (v) { videoReady(v); return; }
+			if (typeof MutationObserver === 'undefined') {
+				setTimeout(function () { state.video = true; check(); }, 2000);
+				return;
+			}
+			var obs = new MutationObserver(function () {
+				var found = document.querySelector('.hero-video');
+				if (found) { obs.disconnect(); videoReady(found); }
+			});
+			obs.observe(document.documentElement, { childList: true, subtree: true });
+			setTimeout(function () {
+				if (!state.video) { obs.disconnect(); state.video = true; check(); }
+			}, 2500);
+		}
+
+		function videoReady(v) {
+			if (state.video) return;
+			function ratio() {
+				try {
+					if (!v.duration || !isFinite(v.duration)) return v.readyState >= 2 ? 0.8 : 0.05;
+					if (v.buffered && v.buffered.length) return Math.min(1, v.buffered.end(v.buffered.length - 1) / v.duration);
+					return v.readyState >= 2 ? 0.35 : 0.05;
+				} catch (e) { return v.readyState >= 2 ? 0.8 : 0.05; }
+			}
+			function tick() {
+				state.videoRatio = Math.max(state.videoRatio, ratio());
+				paint();
+				if (v.readyState >= 3 || state.videoRatio >= 0.85) done();
+			}
+			function done() {
+				if (state.video) return;
+				state.video = true;
+				state.videoRatio = 1;
+				check();
+			}
+			['progress', 'loadeddata', 'canplay', 'loadedmetadata'].forEach(function (evt) { v.addEventListener(evt, tick); });
+			v.addEventListener('canplaythrough', done);
+			v.addEventListener('error', done);
+			tick();
+			setTimeout(function () {
+				if (!state.video) { state.videoRatio = Math.max(state.videoRatio, 0.8); done(); }
+			}, 6000);
+		}
+
+		function domReady() {
+			grab();
+			watchVideo();
+			setTimeout(function () {
+				if (!state.dom) { state.dom = true; check(); }
+			}, 3000);
+		}
+
+		if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', domReady);
+		else domReady();
+		window.addEventListener('load', function () { state.dom = true; check(); });
+		ticker = setInterval(check, 250);
+	})();
+	</script>
 </head>
 <body>
+	<div id="copper-loader" class="copper-loader" role="status" aria-live="polite">
+		<div class="copper-loader-mark" aria-hidden="true">Cu</div>
+		<p class="copper-loader-title">Copper Linux</p>
+		<p class="copper-loader-copy">Please wait — assets are loading. This can take time depending on your internet.</p>
+		<div class="copper-loader-track" aria-hidden="true"><span id="copper-loader-bar" class="copper-loader-bar"></span></div>
+		<p class="copper-loader-percent" id="copper-loader-percent">0%</p>
+	</div>
+
 	<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
 
 	<nav class="navbar navbar-inverse navbar-copper navbar-fixed-top">

@@ -1,110 +1,251 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
 	<meta charset="UTF-8">
-	<title>Copper Linux — Official Website</title>
-	<meta name="description" content="Copper Linux is a small, fast Linux distribution built by three people, with a security edition called Deadlight. Download pre-releases from GitHub.">
+	<script>
+	/* Set the theme before first paint so there is no flash of the wrong theme. */
+	(function () {
+		var t;
+		try { t = localStorage.getItem('copper-theme'); } catch (e) { t = null; }
+		if (t !== 'light' && t !== 'dark') {
+			t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+		}
+		document.documentElement.classList.toggle('dark', t === 'dark');
+	})();
+	</script>
+	<title>Copper Linux — Download the Copper Linux distro</title>
+	<meta name="description" content="Copper Linux is a small, fast, independent Linux distribution for daily use. Download Copper Linux pre-releases, browse the ingot package manager repo and get started.">
+	<meta name="keywords" content="Copper Linux, Copper Linux download, download Copper Linux, Copper Linux ISO, Copper distro, Copper OS, Linux distribution, ingot package manager, copper-ingot-repo, lightweight Linux, x86_64 Linux, independent Linux distro">
+	<meta name="author" content="12hrformat">
+	<meta name="application-name" content="Copper Linux">
+	<meta name="robots" content="index, follow, max-image-preview:large">
+	<meta name="googlebot" content="index, follow">
 	<link rel="canonical" href="https://12hrformat.github.io/copperlinux-site/">
-	<meta name="robots" content="index, follow">
+	<link rel="alternate" hreflang="en" href="https://12hrformat.github.io/copperlinux-site/">
 	<meta property="og:site_name" content="Copper Linux">
-	<meta property="og:title" content="Copper Linux — Official Website">
-	<meta property="og:description" content="Copper Linux is a small, fast Linux distribution built by three people, with a security edition called Deadlight. Download pre-releases from GitHub.">
+	<meta property="og:locale" content="en_US">
+	<meta property="og:title" content="Copper Linux — a small, fast, independent Linux distro">
+	<meta property="og:description" content="Copper Linux is a desktop Linux distribution built by one maintainer and a few contributors. Download pre-releases and explore ingot, Copper's own package manager.">
 	<meta property="og:type" content="website">
 	<meta property="og:url" content="https://12hrformat.github.io/copperlinux-site/">
 	<meta property="og:image" content="https://12hrformat.github.io/copperlinux-site/og-image.png">
 	<meta property="og:image:width" content="1920">
 	<meta property="og:image:height" content="1080">
-	<meta property="og:image:alt" content="Copper Linux — an independent Linux distribution, security edition Deadlight.">
+	<meta property="og:image:alt" content="Copper Linux — an independent Linux distribution with the ingot package manager.">
 	<meta name="twitter:card" content="summary_large_image">
-	<meta name="twitter:title" content="Copper Linux — Official Website">
-	<meta name="twitter:description" content="Copper Linux is a small, fast Linux distribution built by three people, with a security edition called Deadlight. Download pre-releases from GitHub.">
+	<meta name="twitter:title" content="Copper Linux — a small, fast, independent Linux distro">
+	<meta name="twitter:description" content="Download Copper Linux pre-releases and explore ingot, Copper's own package manager.">
 	<meta name="twitter:image" content="https://12hrformat.github.io/copperlinux-site/og-image.png">
 	<link rel="image_src" href="https://12hrformat.github.io/copperlinux-site/og-image.png">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="theme-color" content="#0a0a0a">
+	<meta name="theme-color" content="#0b0b0c">
 	<link rel="icon" type="image/png" href="favicon.png">
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
-	<!-- bootstrap; grid + navbar + all that -->
+
+	<!-- Structured data: helps search engines understand what this site is -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@graph": [
+			{
+				"@type": "WebSite",
+				"@id": "https://12hrformat.github.io/copperlinux-site/#website",
+				"url": "https://12hrformat.github.io/copperlinux-site/",
+				"name": "Copper Linux",
+				"alternateName": "Copper",
+				"inLanguage": "en",
+				"publisher": { "@id": "https://12hrformat.github.io/copperlinux-site/#org" }
+			},
+			{
+				"@type": "Organization",
+				"@id": "https://12hrformat.github.io/copperlinux-site/#org",
+				"name": "Copper Linux",
+				"url": "https://12hrformat.github.io/copperlinux-site/",
+				"logo": "https://12hrformat.github.io/copperlinux-site/favicon.png",
+				"sameAs": [
+					"https://github.com/12hrformat/copperlinux",
+					"https://github.com/12hrformat/copper-ingot-repo",
+					"https://instagram.com/copperlinux"
+				]
+			},
+			{
+				"@type": "SoftwareApplication",
+				"@id": "https://12hrformat.github.io/copperlinux-site/#software",
+				"name": "Copper Linux",
+				"alternateName": ["Copper", "Copper Linux distro", "Copper Linux OS"],
+				"applicationCategory": "OperatingSystem",
+				"operatingSystem": "Linux",
+				"description": "Copper Linux is a small, fast Linux distribution for daily use, built by one maintainer with a few contributors. It ships with ingot, Copper's own package manager.",
+				"url": "https://12hrformat.github.io/copperlinux-site/",
+				"downloadUrl": "https://github.com/12hrformat/copperlinux/releases/latest",
+				"softwareVersion": "pre-release",
+				"author": { "@id": "https://12hrformat.github.io/copperlinux-site/#org" },
+				"offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+			},
+			{
+				"@type": "FAQPage",
+				"@id": "https://12hrformat.github.io/copperlinux-site/#faq",
+				"mainEntity": [
+					{
+						"@type": "Question",
+						"name": "What is Copper Linux?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Copper Linux is a small, fast, independent Linux distribution for daily use. It is built by one maintainer with a few contributors and ships with ingot, Copper's own package manager."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "Where can I download Copper Linux?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Copper Linux pre-releases are published on GitHub. Use the latest release link on this site to download the newest Copper Linux ISO."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "What is ingot?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "ingot is Copper Linux's own package manager. Its repository holds packaged tools, desktop apps, network utilities, libraries and fonts that can be installed on Copper Linux."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "Is Copper Linux free?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Yes. Copper Linux is open source and free to download, use, modify and contribute to."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "Who makes Copper Linux?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Copper Linux is built by one maintainer, 12hrformat, with help from a few contributors."
+						}
+					}
+				]
+			}
+		]
+	}
+	</script>
+
 	<link href="css/bootstrap.css" rel="stylesheet">
-	<!-- fonts (copper identity) -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-	<!-- our css -->
-	<link href="css/copper.css" rel="stylesheet">
-	<!-- Icons -->
+	<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link href="css/copper.css?v=9" rel="stylesheet">
 	<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-	<!-- Navigation -->
+	<div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
 	<nav class="navbar navbar-inverse navbar-copper navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-nav-collapse">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-nav-collapse" aria-label="Toggle navigation">
 					<span class="sr-only">Toggle navigation</span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="cl-logo_link" href="#/">
-					<span class="cl-logo">CL</span>
-					<span class="cl-wordmark">Copper linux</span>
+				<a class="cl-logo_link" href="#/" aria-label="Copper Linux home">
+					<span class="cl-logo">Cu</span>
+					<span class="cl-wordmark">Copper Linux</span>
 				</a>
 			</div>
 			<div class="collapse navbar-collapse cl-menu" id="main-nav-collapse">
 				<ul class="nav navbar-nav navbar-right">
-					<li id="nav-home"><a href="#/"><i class="fas fa-home"></i> Home</a></li>
-					<li id="nav-daily"><a href="#/daily-driving"><i class="fas fa-desktop"></i> Copper</a></li>
-					<li id="nav-deadlight"><a href="#/security"><i class="fas fa-shield-alt"></i> Deadlight</a></li>
-					<li id="nav-downloads"><a href="#/downloads"><i class="fas fa-download"></i> Downloads</a></li>
-					<li id="nav-tools"><a href="#/tools"><i class="fas fa-list-alt"></i> Tools</a></li>
-					<li id="nav-contributions"><a href="#/contributions"><i class="fas fa-code-branch"></i> Contribute</a></li>
-					<li id="nav-contributors"><a href="#/contributors"><i class="fas fa-users"></i> Team</a></li>
-					<li id="nav-track"><a href="#/track"><i class="fas fa-history"></i> Track</a></li>
-					<li id="nav-github"><a href="https://github.com/12hrformat/copperlinux" target="_blank"><i class="fab fa-github"></i> Github</a></li>
+					<li id="nav-home"><a href="#/">Home</a></li>
+					<li id="nav-daily"><a href="#/daily-driving">Copper</a></li>
+					<li id="nav-ingot"><a href="#/ingot">ingot</a></li>
+					<li id="nav-downloads"><a href="#/downloads">Download</a></li>
+					<li id="nav-contributions"><a href="#/contributions">Contribute</a></li>
+					<li id="nav-contributors"><a href="#/contributors">Team</a></li>
+					<li id="nav-track"><a href="#/track">Track</a></li>
+					<li id="nav-theme"><a href="#" id="theme-toggle" role="button" title="Switch to light theme" aria-label="Switch to light theme"><i class="fas fa-sun" id="theme-icon" aria-hidden="true"></i></a></li>
+					<li id="nav-github"><a href="https://github.com/12hrformat/copperlinux" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub</a></li>
 				</ul>
 			</div>
 		</div>
 	</nav>
 
-	<!-- root (generated by app.js; this static copy is what crawlers see before JS runs) -->
+	<!-- Crawler-friendly, JS-independent copy. Replaced by the app on load. -->
 	<main id="app">
-		<div class="container" style="padding-top:100px;padding-bottom:60px;">
-			<h1>Copper Linux — an independent Linux distribution</h1>
-			<p>A small, fast Linux distribution built by three people, plus a security edition called <a href="#/security">Deadlight</a>. Pre-releases are on GitHub.</p>
-			<p><strong>Download Copper Linux:</strong> <a href="https://github.com/12hrformat/copperlinux/releases/latest">latest pre-release</a> &middot; <a href="https://github.com/12hrformat/copperlinux/releases">all releases</a></p>
-			<p><a href="https://github.com/12hrformat/copperlinux">View on GitHub</a> &middot; <a href="#/downloads">Downloads</a> &middot; <a href="#/daily-driving">Copper — daily driving</a> &middot; <a href="#/security">Deadlight — security edition</a></p>
+		<div class="static-page container">
+			<header class="static-hero">
+				<p class="static-kicker">Independent Linux distribution &middot; x86_64</p>
+				<h1>Copper Linux</h1>
+				<p class="static-lead">Copper Linux is a small, fast Linux distribution for daily use, built by one maintainer with a few contributors. It ships with <a href="#/ingot">ingot</a>, Copper's own package manager.</p>
+				<p><a class="static-cta" href="https://github.com/12hrformat/copperlinux/releases/latest">Download Copper Linux pre-release</a></p>
+			</header>
+
+			<section>
+				<h2>What is Copper Linux?</h2>
+				<p>Copper Linux is an independent, open source Linux distribution for web, code, school and everyday work. The desktop is ready to use, Ethernet works out of the box, and packages are installed with ingot — a package manager written for Copper.</p>
+				<p>Copper Linux pre-releases are published on <a href="https://github.com/12hrformat/copperlinux/releases">GitHub</a>. There is no stable ISO yet; the releases are meant for testing in a VM or on real hardware.</p>
+			</section>
+
+			<section>
+				<h2>ingot package manager</h2>
+				<p>ingot is Copper Linux's own package manager. Its <a href="https://github.com/12hrformat/copper-ingot-repo">copper-ingot-repo</a> holds packaged tools, desktop apps, network utilities, libraries and fonts. Browse every package in the site's <a href="#/ingot">ingot section</a>.</p>
+			</section>
+
+			<section>
+				<h2>Download Copper Linux</h2>
+				<p>Get the newest <a href="https://github.com/12hrformat/copperlinux/releases/latest">Copper Linux pre-release</a>, or see <a href="https://github.com/12hrformat/copperlinux/releases">all releases</a>. Attach the ISO to a VM with at least 2&nbsp;GB of RAM and boot from it — nothing is installed unless you choose to install it.</p>
+			</section>
+
+			<section>
+				<h2>Frequently asked questions</h2>
+				<h3>What is Copper Linux?</h3>
+				<p>Copper Linux is a small, fast, independent Linux distribution for daily use. It is built by one maintainer with a few contributors and ships with ingot, Copper's own package manager.</p>
+				<h3>Where can I download Copper Linux?</h3>
+				<p>Copper Linux pre-releases are published on GitHub. Use the latest release link on this site to download the newest Copper Linux ISO.</p>
+				<h3>What is ingot?</h3>
+				<p>ingot is Copper Linux's own package manager. Its repository holds packaged tools, desktop apps, network utilities, libraries and fonts that can be installed on Copper Linux.</p>
+				<h3>Is Copper Linux free?</h3>
+				<p>Yes. Copper Linux is open source and free to download, use, modify and contribute to.</p>
+				<h3>Who makes Copper Linux?</h3>
+				<p>Copper Linux is built by one maintainer, 12hrformat, with help from a few contributors.</p>
+			</section>
+
+			<p class="static-links">
+				<a href="#/daily-driving">Copper — daily driving</a> &middot;
+				<a href="#/ingot">ingot packages</a> &middot;
+				<a href="#/downloads">Downloads</a> &middot;
+				<a href="#/contributions">Contribute</a> &middot;
+				<a href="#/contributors">Team</a> &middot;
+				<a href="https://github.com/12hrformat/copperlinux">Copper Linux on GitHub</a>
+			</p>
 		</div>
 	</main>
 
-	<!-- Footer -->
 	<footer class="cl-footer">
 		<div class="container">
 			<div class="row cl-footer-top">
 				<div class="col-md-6 cl-footer-brand">
-					<span class="cl-footer-monogram">CL</span>
+					<span class="cl-footer-monogram">Cu</span>
 					<span class="cl-footer-name">COPPER LINUX</span>
-					<p class="cl-footer-tagline">Fast &middot; Minimal &middot; Different. Made by three people.</p>
+					<p class="cl-footer-tagline">Fast &middot; Minimal &middot; Independent. Built by one person, with a few contributors.</p>
 				</div>
 				<div class="col-md-6 cl-footer-social">
-					<a href="https://github.com/12hrformat/copperlinux" title="GitHub" target="_blank"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a>
-					<a href="https://instagram.com/copperlinux" title="Copper Linux — @copperlinux" target="_blank"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a>
-					<a href="https://instagram.com/deadlightlinux" title="Deadlight Linux — @deadlightlinux" target="_blank"><i class="fab fa-instagram-square fa-lg" aria-hidden="true"></i></a>
-					<p class="cl-footer-handles"><a href="https://instagram.com/copperlinux" target="_blank">@copperlinux</a> &middot; <a href="https://instagram.com/deadlightlinux" target="_blank">@deadlightlinux</a></p>
+					<a href="https://github.com/12hrformat/copperlinux" title="Copper Linux on GitHub" target="_blank" rel="noopener"><i class="fab fa-github fa-lg" aria-hidden="true"></i></a>
+					<a href="https://github.com/12hrformat/copper-ingot-repo" title="copper-ingot-repo on GitHub" target="_blank" rel="noopener"><i class="fas fa-box fa-lg" aria-hidden="true"></i></a>
+					<a href="https://instagram.com/copperlinux" title="Copper Linux on Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram fa-lg" aria-hidden="true"></i></a>
+					<p class="cl-footer-handles"><a href="https://instagram.com/copperlinux" target="_blank" rel="noopener">@copperlinux</a> &middot; <a href="https://github.com/12hrformat/copperlinux" target="_blank" rel="noopener">github.com/12hrformat/copperlinux</a></p>
 				</div>
 			</div>
-			
 			<div class="cl-footer-bottom">
-				<span>Copper Linux</span><span>2026-27</span><span>Pre-releases out now!</span>
+				<span>Copper Linux</span><span>2026</span><span>Open source &middot; x86_64</span><span>Pre-releases out now</span>
 			</div>
 		</div>
 	</footer>
 
-	<!-- js -->
 	<script type="text/javascript" src="js/jquery.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
-	<!-- github token-git ignored-see js/ -->
-	<script type="text/javascript" src="js/gh-config.js"></script>
-	<script type="text/javascript" src="app.js"></script>
+	<script type="text/javascript" src="app.js?v=6"></script>
 </body>
 </html>

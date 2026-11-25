@@ -1499,34 +1499,94 @@ ul.list-group > li.list-group-item { background-color: var(--sink); }
 	.cl-footer-social a { margin: 0 10px 0 0; }
 }
 @media (max-width: 767px) {
-	body { font-size: 16px; }
-	.navbar-copper .navbar-nav > li > a { text-transform: none; font-size: 13px; padding: 13px 12px; }
+	body { font-size: 16px; -webkit-text-size-adjust: 100%; }
+	a, button, summary { touch-action: manipulation; }
+
+	/* navigation: roomy tap targets, and GitHub returns inside the collapsed menu */
+	.navbar-copper .navbar-toggle { min-width: 44px; padding: 9px 10px; }
+	.navbar-copper .navbar-nav > li > a {
+		display: flex;
+		align-items: center;
+		min-height: 44px;
+		text-transform: none;
+		font-size: 14px;
+		padding: 14px 16px;
+	}
+	#nav-github { display: list-item; }
+
+	/* hero: tighter top, readable copy, real button targets */
+	.hero { padding-top: 26px; padding-bottom: 42px; }
+	.hero-title { font-size: clamp(3.4rem, 15vw, 5.5rem); }
+	.hero-lead { font-size: 16px; }
+	.hero-actions .btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		min-height: 48px;
+		text-align: center;
+	}
+
 	.stat-strip { grid-template-columns: 1fr 1fr; }
 	.stat { border-left: none; border-top: 1px solid var(--line); }
 	.stat:nth-child(odd) { border-left: 1px solid var(--line); }
 	.stat:nth-child(-n+2) { border-top: none; }
 	.contribute-steps { grid-template-columns: 1fr; }
+	.contribute-band { margin: 44px 0 24px; padding: 28px 22px; }
 	.content-grid, .content-grid.three-col { grid-template-columns: 1fr; }
 	.feature-grid { grid-template-columns: 1fr 1fr; }
-	.hero-actions .btn { width: 100%; text-align: center; }
+	.section-head { margin: 40px 0 20px; }
 	.page-intro h1 { font-size: clamp(3rem, 14vw, 5rem); }
+	.page-lead { font-size: 17px; }
 	.release-card { flex-direction: column; gap: 16px; padding: 22px; }
 	.static-hero h1 { font-size: 52px; }
+	.step-list li { gap: 14px; }
+	.team-intro { flex-wrap: wrap; }
+	.track-panel .btn { margin-left: 0; width: 100%; }
+
+	/* ingot browser: swipeable filters, 16px input stops iOS zoom-on-focus */
+	.explorer-toolbar { padding: 14px 16px; }
+	.search-field input { font-size: 16px; padding: 12px 12px 12px 38px; }
+	.filter-row { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 12px 16px; }
+	.filter-btn { flex: 0 0 auto; padding: 9px 14px; font-size: 12px; }
+	.pkg-groups { padding: 18px 16px 6px; }
+	.repo-title { gap: 12px; }
 }
 @media (max-width: 520px) {
 	.feature-grid { grid-template-columns: 1fr; }
 	.stat-strip { grid-template-columns: 1fr; }
 	.stat { border-left: none !important; }
 	.stat:not(:first-child) { border-top: 1px solid var(--line); }
+
+	/* video stays high; terminal becomes a compact overlay so the title stays visible */
 	.hero-art { min-height: 280px; }
-	.hero-art-video { min-height: 0; }
-	.hero-video-frame { width: min(100%, 300px); top: -12px; }
+	.hero-art-video { min-height: 0; align-items: flex-start; justify-content: center; }
+	.hero-video-frame { width: min(100%, 290px); top: -8px; }
 	.video-fallback { font-size: 48px; }
-	.terminal-card { width: 100%; }
-	.hero-art-video .terminal-card { width: min(100%, 240px); }
+	.hero-art-video .terminal-card {
+		position: absolute;
+		right: 0; bottom: 0;
+		width: min(100%, 230px);
+		transform: none;
+		animation: none;
+		z-index: 2;
+	}
+	.hero-art-video .terminal-output { min-height: 72px; padding: 10px 12px 12px; font-size: 11px; }
+	.hero-art-video .terminal-bar { padding: 7px 10px; font-size: 10px; }
+	.hero-title { font-size: clamp(3rem, 15vw, 4.6rem); }
+	.hero-lead { font-size: 15px; }
+	.page-intro h1 { font-size: clamp(2.8rem, 14vw, 4rem); }
+	.section-head h2 { font-size: clamp(2.1rem, 11vw, 3.2rem); }
+	.pkg-cards { grid-template-columns: 1fr; }
+	.repo-facts a { padding: 9px 12px; }
+	.contribute-band .btn { width: 100%; }
 	.faq-item summary { font-size: 19px; }
 	.team-intro { gap: 14px; padding: 20px; }
 	.team-intro-num { font-size: 54px; }
+	.cl-footer-bottom { gap: 8px; }
+
+	.copper-loader-mark { width: 84px; height: 84px; font-size: 40px; }
+	.copper-loader-copy { font-size: 12px; }
 }
 
 /* touch screens: hover lifts read as glitches while scrolling */

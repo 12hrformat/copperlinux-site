@@ -21,6 +21,10 @@ Open <http://127.0.0.1:8000/>.
 Example routes:
 
 - <http://127.0.0.1:8000/#/ingot>
+- <http://127.0.0.1:8000/#/docs>
+- <http://127.0.0.1:8000/#/docs/copper>
+- <http://127.0.0.1:8000/#/docs/ingot>
+- <http://127.0.0.1:8000/#/bugs>
 - <http://127.0.0.1:8000/#/downloads>
 - <http://127.0.0.1:8000/#/track>
 
@@ -34,7 +38,7 @@ GitHub Pages, etc.).
 | File | Purpose |
 | --- | --- |
 | `index.html` | SEO shell, JSON-LD, crawler-readable copy, nav, footer, loading screen and the inline pre-paint theme script. |
-| `app.js` | Hash router, page templates, GitHub feeds, ingot browser, theme toggle, loader-compatible fetch tracking, scroll reveals and counters. |
+| `app.js` | Hash router, page templates, docs pages, bug tracker, GitHub feeds, ingot browser, theme toggle, loader-compatible fetch tracking, scroll reveals and counters. |
 | `css/copper.css` | Full visual system: dark and light palettes, layout, animations, responsive rules and the polygon View Transition wipe. |
 | `assets/liquid-logo.mp4` | Looping liquid logo beside the home-page title (500×500, ~10.7 s, muted inline video). |
 | `sitemap.xml` | Route list for search engines. |
@@ -57,6 +61,10 @@ navigation.
 | `#/daily-driving` | Copper | Daily-driving edition. |
 | `#/ingot` | ingot | Live package browser and repo card. |
 | `#/tools` | ingot | Old link alias; renders the same page as `#/ingot`. |
+| `#/docs` | Documentation | Docs hub with links to every guide and source repository. |
+| `#/docs/copper` | Copper guide | Booting, first boot, desktops, audio, boot entries and troubleshooting. |
+| `#/docs/ingot` | ingot guide | Commands, repository format, mirrors and adding a package. |
+| `#/bugs` | Bug tracker | Report buttons, maintainer-maintained bug list and live GitHub issues. |
 | `#/downloads` | Downloads | Pre-release ISO links and boot instructions. |
 | `#/contributions` | Contribute | Ways to help the distro and repo. |
 | `#/contributors` | Team | Maintainer plus contributors. |
@@ -78,6 +86,20 @@ then binds page-specific interactions (reveals, counters, video, filter handlers
 
 Transitions between routes are CSS-based (`is-leaving` / `is-entering`) and are
 disabled for `prefers-reduced-motion`.
+
+### Documentation and bug tracker
+
+The Docs dropdown in the navbar opens four in-site pages: the documentation hub
+(`#/docs`), the Copper guide (`#/docs/copper`), the ingot guide (`#/docs/ingot`)
+and the bug tracker (`#/bugs`). Page copy lives in the `docShell()`,
+`docSection()`, `docTable()` and `docCode()` helpers near the bottom of
+`app.js`, so it can be edited without touching the router.
+
+The **Known issues** block on `#/bugs` is intentionally empty. Add objects to
+`KNOWN_BUGS` in `app.js` to fill it; each entry can have `title`, `status`,
+`repo`, `detail`, `url` and `updated`. The page also shows live GitHub issues
+from `copperlinux`, `copper-ingot-repo` and `copperlinux-site`, with pull
+requests filtered out. Report buttons open pre-filled GitHub issue forms.
 
 ### Live GitHub data
 
@@ -180,6 +202,8 @@ At 390 px wide there is no horizontal overflow.
 | Fonts | `--font-*` variables in `css/copper.css`. |
 | Nav links | `index.html` navbar block. |
 | Page copy | Page functions in `app.js` **and** the static copy in `index.html` — keep them in sync. |
+| Documentation copy | `docShell()` / `docSection()` page functions in `app.js`. |
+| Known bug entries | `KNOWN_BUGS` in `app.js` — intentionally left for the maintainer to fill. |
 | Route titles/descriptions | `TITLES` / `DESCRIPTIONS` in `app.js`. |
 | Team list | `TEAM` in `app.js`. |
 | ingot sources | `INGOT_REPO_URL`, `INGOT_RAW`, `INGOT_CATS` in `app.js`. |

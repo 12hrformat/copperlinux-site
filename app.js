@@ -10,7 +10,11 @@ var ROUTES = {
     '/downloads':     pageDownloads,
     '/contributions': pageContributions,
     '/contributors':  pageContributors,
-    '/track':         pageTrack
+    '/track':         pageTrack,
+    '/docs':          pageDocs,
+    '/docs/copper':   pageDocsCopper,
+    '/docs/ingot':    pageDocsIngot,
+    '/bugs':          pageBugs
 };
 
 var TITLES = {
@@ -21,7 +25,11 @@ var TITLES = {
     '/downloads':     'Download Copper Linux — pre-release ISOs',
     '/contributions': 'Contribute to Copper Linux',
     '/contributors':  'Copper Linux team — maintainer & contributors',
-    '/track':         'Track Copper Linux development'
+    '/track':         'Track Copper Linux development',
+    '/docs':          'Copper Linux documentation — guides and reference',
+    '/docs/copper':   'Copper Linux documentation — booting, desktop and daily use',
+    '/docs/ingot':    'ingot documentation — commands, packages and the repository',
+    '/bugs':          'Copper Linux bug tracker — report and browse issues'
 };
 
 var DESCRIPTIONS = {
@@ -32,7 +40,11 @@ var DESCRIPTIONS = {
     '/downloads':     'Download Copper Linux pre-release ISOs from GitHub. Boot the latest Copper Linux live image in a VM or on real hardware.',
     '/contributions': 'Contribute to Copper Linux: report bugs, test pre-releases, write code or add packages to the ingot repository.',
     '/contributors':  'Copper Linux is built by one maintainer, 12hrformat, with a few contributors. Meet the team behind the distro.',
-    '/track':         'Track recent commits from the copperlinux and copper-ingot-repo repositories on GitHub.'
+    '/track':         'Track recent commits from the copperlinux and copper-ingot-repo repositories on GitHub.',
+    '/docs':          'Guides and reference for Copper Linux: getting started, the desktop, ingot packages and bug tracking.',
+    '/docs/copper':   'Copper Linux documentation: boot the live ISO, first-boot setup, desktop sessions, networking and troubleshooting.',
+    '/docs/ingot':    'ingot documentation: install and update packages, understand the repository and contribute new packages.',
+    '/bugs':          'Browse open Copper Linux and ingot issues on GitHub, or report a bug with a clear reproducible description.'
 };
 
 function getHash() { return location.hash.slice(1) || '/'; }
@@ -157,12 +169,19 @@ var NAV_IDS = {
     '/downloads':     'nav-downloads',
     '/contributions': 'nav-contributions',
     '/contributors':  'nav-contributors',
-    '/track':         'nav-track'
+    '/track':         'nav-track',
+    '/docs':          'nav-docs-home',
+    '/docs/copper':   'nav-docs-copper',
+    '/docs/ingot':    'nav-docs-ingot',
+    '/bugs':          'nav-bugs'
 };
 
 function setActiveNav(hash) {
-    $('.navbar-nav > li').removeClass('active');
+    $('.navbar-nav li').removeClass('active');
     if (NAV_IDS[hash]) $('#' + NAV_IDS[hash]).addClass('active');
+    if (hash === '/docs' || hash === '/docs/copper' || hash === '/docs/ingot' || hash === '/bugs') {
+        $('#nav-docs').addClass('active');
+    }
 }
 
 /* keep social/search metadata in step with the page the visitor is on */
@@ -213,6 +232,11 @@ function bindPageInteractions(hash) {
     if (hash === '/') { loadReleases(); loadIngotPreview(); initHeroVideo(); }
     if (hash === '/ingot' || hash === '/tools') loadIngotPackages();
     if (hash === '/contributors') renderTeam();
+    if (hash === '/bugs') {
+        renderKnownBugs();
+        loadIssues();
+        $('#bugs-refresh').off('click').on('click', loadIssues);
+    }
     if (hash === '/track') {
         renderTrack();
         $('#track-refresh').off('click').on('click', renderTrack);
@@ -230,7 +254,8 @@ function initReveal() {
         '#app .hero-art, #app .stat-strip, #app .section-head, #app .feature-card,' +
         '#app .release-card, #app .panel, #app .page-intro > *,' +
         '#app .breadcrumb, #app .contribute-band, #app .faq-item,' +
-        '#app .repo-card, #app .step, #app .team-card'
+        '#app .repo-card, #app .step, #app .team-card,' +
+        '#app .doc-section, #app .docs-sidebar, #app .doc-note, #app .issue-card, #app .empty-state'
     );
     var pending = [];
     for (var i = 0; i < targets.length; i++) {
@@ -569,9 +594,13 @@ function markRateLimited() {
 }
 
 function showRateBanner() {
-    var banner = document.getElementById('track-banner');
-    if (!banner || banner.firstChild) return;
-    banner.innerHTML = '<div class="alert-rate"><i class="fas fa-exclamation-triangle"></i> GitHub API rate limit reached — you can still check the commits on GitHub.</div>';
+    var banners = ['track-banner', 'bugs-banner'];
+    banners.forEach(function (id) {
+        var banner = document.getElementById(id);
+        if (!banner || banner.firstChild) return;
+        banner.innerHTML = '<div class="alert-rate"><i class="fas fa-exclamation-triangle"></i> '
+            + 'GitHub API rate limit reached — you can still check everything on GitHub.</div>';
+    });
 }
 
 function ghToken() {
@@ -1066,6 +1095,409 @@ function pageTrack() {
         + '<div id="track-banner"></div><div id="track-status" class="track-status"></div><div id="track-feeds"></div>'
         + '</div></div>'
         + '</div>';
+}
+
+/* ------------------------------------------------------------------
+   Documentation — in-site guides, issue tracking, and the bug list
+   the maintainer fills in by hand in KNOWN_BUGS below.
+   ------------------------------------------------------------------ */
+function docsLink(href, label, icon, active) {
+    return '<a class="docs-side-link' + (active ? ' is-active' : '') + '" href="' + href + '">'
+        + '<i class="' + icon + '" aria-hidden="true"></i>' + label + '</a>';
+}
+
+function docShell(kicker, title, lead, body, current) {
+    var nav = '<p class="docs-sidebar-title">Guides</p>'
+        + docsLink('#/docs', 'Overview', 'fas fa-book', current === 'Overview')
+        + docsLink('#/docs/copper', 'Copper Linux', 'fas fa-desktop', current === 'Copper Linux')
+        + docsLink('#/docs/ingot', 'ingot', 'fas fa-box', current === 'ingot')
+        + docsLink('#/bugs', 'Bug tracker', 'fas fa-bug', current === 'Bug tracker')
+        + '<p class="docs-sidebar-title">Source</p>'
+        + '<a class="docs-side-link" href="https://github.com/12hrformat/copperlinux" target="_blank" rel="noopener"><i class="fab fa-github" aria-hidden="true"></i>copperlinux</a>'
+        + '<a class="docs-side-link" href="https://github.com/12hrformat/copper-ingot-repo" target="_blank" rel="noopener"><i class="fab fa-github" aria-hidden="true"></i>copper-ingot-repo</a>'
+        + '<a class="docs-side-link" href="https://github.com/12hrformat/copperlinux-site" target="_blank" rel="noopener"><i class="fab fa-github" aria-hidden="true"></i>copperlinux-site</a>';
+
+    return '<div class="container site-content docs-page">'
+        + crumbs('Docs / ' + current)
+        + pageIntro(kicker, title, lead)
+        + '<div class="docs-layout">'
+        + '  <aside class="docs-sidebar" aria-label="Documentation navigation">' + nav + '</aside>'
+        + '  <div class="docs-main">' + body + '</div>'
+        + '</div>'
+        + '</div>';
+}
+
+function docSection(num, title, intro, content) {
+    return '<section class="doc-section">'
+        + '<div class="doc-section-head"><span class="doc-section-num">' + num + '</span><div>'
+        + '<h2>' + title + '</h2>' + (intro ? '<p>' + intro + '</p>' : '')
+        + '</div></div>'
+        + '<div class="doc-section-body">' + content + '</div>'
+        + '</section>';
+}
+
+function docCode(lines) {
+    var text = Array.isArray(lines) ? lines.join('\n') : String(lines);
+    return '<pre class="doc-code"><code>' + escHtml(text) + '</code></pre>';
+}
+
+function docTable(cols, rows) {
+    return '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>'
+        + cols.map(function (c) { return '<th>' + c + '</th>'; }).join('')
+        + '</tr></thead><tbody>'
+        + rows.map(function (row) {
+            return '<tr>' + row.map(function (cell) { return '<td>' + cell + '</td>'; }).join('') + '</tr>';
+        }).join('')
+        + '</tbody></table></div>';
+}
+
+function docNote(title, text, kind) {
+    var icon = kind === 'warn' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+    return '<aside class="doc-note' + (kind ? ' doc-note-' + kind : '') + '">'
+        + '<i class="fas ' + icon + '" aria-hidden="true"></i>'
+        + '<div><b>' + title + '</b><p>' + text + '</p></div></aside>';
+}
+
+function pageDocs() {
+    var body = docSection('01', 'Pick a guide', 'Three short guides cover the things people actually ask about.',
+        '<div class="doc-card-grid">'
+        + '<a class="mini-card doc-card" href="#/docs/copper"><span class="feature-num">01</span><h3>Copper Linux</h3><p>Boot the live ISO, first-boot questions, XFCE / niri / Hyprland, audio and boot entries.</p><span class="doc-card-more">Read the guide <i class="fas fa-arrow-right"></i></span></a>'
+        + '<a class="mini-card doc-card" href="#/docs/ingot"><span class="feature-num">02</span><h3>ingot</h3><p>Every command, the package repository layout, mirrors, and how to add a package.</p><span class="doc-card-more">Read the guide <i class="fas fa-arrow-right"></i></span></a>'
+        + '<a class="mini-card doc-card" href="#/bugs"><span class="feature-num">03</span><h3>Bug tracker</h3><p>Where to report a bad boot, a broken payload or a site bug — and what to include.</p><span class="doc-card-more">Open tracker <i class="fas fa-arrow-right"></i></span></a>'
+        + '</div>'
+        + docNote('Pre-release, not a promise', 'Copper Linux is still a work in progress. The ISO is for testing in a VM or on hardware you can afford to play with. Clear bug reports are more useful than polite silence.'))
+        + docSection('02', 'Where the source lives', 'These pages are a readable layer over the real repositories.',
+        docTable(['Repository', 'What it holds', 'Link'], [
+            ['<code>12hrformat/copperlinux</code>', 'ISO build, first boot, desktop launchers, init and core utilities', '<a href="https://github.com/12hrformat/copperlinux" target="_blank" rel="noopener">Open <i class="fas fa-external-link-alt"></i></a>'],
+            ['<code>12hrformat/copper-ingot-repo</code>', 'Package pages, indexes, payload tarballs and repo tooling', '<a href="https://github.com/12hrformat/copper-ingot-repo" target="_blank" rel="noopener">Open <i class="fas fa-external-link-alt"></i></a>'],
+            ['<code>12hrformat/copperlinux-site</code>', 'This website and its documentation', '<a href="https://github.com/12hrformat/copperlinux-site" target="_blank" rel="noopener">Open <i class="fas fa-external-link-alt"></i></a>']
+        ]))
+        + docSection('03', 'Still need a hand?', 'Contribution and development pages sit next to the docs.',
+        '<div class="doc-actions">'
+        + '<a class="btn btn-primary-cl" href="#/downloads"><i class="fas fa-download"></i> Get the ISO</a>'
+        + '<a class="btn btn-ghost-cl" href="#/contributions">Contribute</a>'
+        + '<a class="btn btn-link-cl" href="#/track">Track development <i class="fas fa-arrow-right"></i></a>'
+        + '</div>');
+
+    return docShell('Documentation hub', 'Documentation<span class="intro-dot">.</span>',
+        'Practical guides for booting Copper Linux, using ingot and reporting what breaks.',
+        body, 'Overview');
+}
+
+function pageDocsCopper() {
+    var body = docSection('01', 'Before you boot', 'The image is a live ISO. It does not touch your disk until you decide to install it.',
+        '<p>Download the newest <a href="https://github.com/12hrformat/copperlinux/releases" target="_blank" rel="noopener">pre-release ISO</a> and attach it to VMware, VirtualBox or QEMU with at least 2&nbsp;GB of RAM. Boot from the virtual CD. If you write it to a USB stick, double-check the target device first.</p>'
+        + docTable(['Boot entry', 'What you get'], [
+            ['Copper Linux', 'First-boot wizard if needed, then a shell. This is the default.'],
+            ['Copper Linux (systemd init)', 'The same image with the systemd payload selected via <code>copper.init=systemd</code>.'],
+            ['Copper Linux (verbose)', 'The default path with kernel messages visible.'],
+            ['Copper Linux (debug)', 'Everything logged, with panic-on-hang so a wedge reboots and shows the failure.'],
+            ['Copper Linux (initramfs shell)', 'A shell inside the initramfs, skipping the overlay — useful for splitting kernel/initrd failures from <code>/init</code> failures.']
+        ])
+        + docNote('Known rough edge', 'The X stack is proven under QEMU, but not every machine. That is why the default boot lands at a prompt instead of a desktop. <code>nogui</code> on the kernel command line is the escape hatch if a graphics session gets in the way.', 'warn'))
+        + docSection('02', 'First boot', 'The wizard asks about you, not about implementation details.',
+        '<p>It asks for your name, login, machine name, passwords and timezone. It does not ask you to choose a desktop, shell, audio server or init — the image is built around XFCE, bash, PulseAudio and copper-init. First-boot answers apply to the live session; a reboot asks again.</p>'
+        + docTable(['Keys', 'Where you land'], [
+            ['Default image, <code>Ctrl+Alt+F3</code>', 'Password-protected login prompt on tty3. Use the account created in the wizard.'],
+            ['<code>Ctrl+Alt+F1</code>', 'Back to the main session.'],
+            ['systemd image, <code>Ctrl+Alt+F2</code>–<code>F6</code>', 'Login prompts on those TTYs.']
+        ]))
+        + docSection('03', 'Start a desktop', 'XFCE is the default. niri and Hyprland are optional and never start at the same time.',
+        docTable(['Command', 'What it does'], [
+            ['<code>startxfce</code>', 'Starts an X server if needed, then XFCE.'],
+            ['<code>startxfce --check</code>', 'Reports what is installed and exits without starting anything.'],
+            ['<code>startniri</code>', 'Starts the optional niri Wayland desktop on the TTY.'],
+            ['<code>startniri --check</code>', 'Checks niri and exits without starting the session.'],
+            ['<code>sudo ingot install hyprland</code>', 'Installs the Hyprland payload before the first launch.'],
+            ['<code>starthyprland</code>', 'Seeds the Hyprland config and starts the compositor.'],
+            ['<code>starthyprland --check</code>', 'Checks the install without starting the compositor.'],
+            ['<code>starthyprland --yes</code> / <code>--no</code>', 'Accept or decline installing the components the payload lists.']
+        ])
+        + docNote('Scriptable exit codes', '<code>startxfce</code> exits <code>20</code> for no X server, <code>21</code> for no XFCE, <code>22</code> if the server never opened a display, <code>23</code> if it exited while starting, and <code>24</code> on a usage error. A script can branch on those numbers without parsing a message.'))
+        + docSection('04', 'Sound', 'Both audio servers ship in the image; /etc/copper.conf chooses one.',
+        docCode([
+            '# /etc/copper.conf',
+            'audio=pulseaudio      # the default',
+            'audio=pipewire        # pipewire + wireplumber + pipewire-pulse'
+        ])
+        + '<p>Switching is a one-line edit and a new session, not a reinstall. Both serve the PulseAudio protocol used by Firefox, mpv and cava. The launchers call <code>copper-audio init</code>, which unmutes and raises the controls on every card the kernel reports.</p>'
+        + docTable(['Command', 'What it does'], [
+            ['<code>copper-audio</code> / <code>copper-audio status</code>', 'Selected server, running state, cards, sinks, sources and levels.'],
+            ['<code>copper-audio init</code>', 'Unmute and raise playback to 80% and capture to 100% on every card.'],
+            ['<code>copper-audio test</code>', 'One second of 440&nbsp;Hz on the default device.'],
+            ['<code>copper-audio server</code>', 'Which server is currently up.']
+        ])
+        + docNote('No sound at all?', 'Check <code>/proc/asound/cards</code>. If it is empty, the hardware is not HDA and the driver really is missing — the image only ships the HDA driver set. <code>copper-audio status</code> shows whether everything landed on the null sink.', 'warn'))
+        + docSection('05', 'Troubleshooting', 'Common failures and what they actually mean.',
+        '<ul class="check-list check-list-wait">'
+        + '<li><i class="fas fa-hourglass-half"></i><code>starthyprland: no seatd socket at /run/seatd.sock</code> — add the user to the <code>_seatd</code> group, then reboot or log out and back in.</li>'
+        + '<li><i class="fas fa-hourglass-half"></i><code>starthyprland: no writable runtime directory</code> — <code>/run/user/&lt;uid&gt;</code> was not created; boot with the default init.</li>'
+        + '<li><i class="fas fa-hourglass-half"></i><code>starthyprland: forcing software rendering</code> — no DRM render node, common in a VM without 3D acceleration. Leave VMware 3D acceleration on for niri.</li>'
+        + '<li><i class="fas fa-hourglass-half"></i><code>Error opening terminal: linux.</code> — install <code>ncurses-base</code>; full-screen programs need terminfo at runtime.</li>'
+        + '<li><i class="fas fa-hourglass-half"></i>A compositor dies with a shared-library error — the image is older than the payload; rebuild the ISO so the stage library precedence applies.</li>'
+        + '</ul>'
+        + '<p>Hyprland starts from a TTY only: no display manager or graphical login is configured, and the launcher is the single entry point. Anything still broken belongs on the <a href="#/bugs">bug tracker</a>.</p>');
+
+    return docShell('Copper Linux guide', 'Copper Linux<span class="intro-dot">.</span>',
+        'Boot the pre-release, answer first boot, start a desktop, get sound working, and read the failure messages.',
+        body, 'Copper Linux');
+}
+
+function pageDocsIngot() {
+    var body = docSection('01', 'The command line', 'ingot is a POSIX-shell package manager. One verb, one or more package names.',
+        docCode(['ingot <install|remove|update|reinstall|inspect|info|search|list> <name>...'])
+        + docTable(['Command', 'What it does'], [
+            ['<code>sudo ingot install &lt;name&gt;...</code>', 'Fetch each package page, verify the payload, unpack into <code>/</code>. Dependencies install first.'],
+            ['<code>sudo ingot remove &lt;name&gt;...</code>', 'Delete the files recorded in that package&rsquo;s installed manifest.'],
+            ['<code>sudo ingot update [name]...</code>', 'Reinstall packages whose repository SHA-256 changed; all installed packages if no name is given.'],
+            ['<code>sudo ingot reinstall &lt;name&gt;...</code>', 'Install again in place, replacing the existing tree.'],
+            ['<code>ingot inspect &lt;name&gt;</code>', 'Show the installed record: version, URL, SHA-256 and files.'],
+            ['<code>ingot info &lt;name&gt;</code>', 'Print the package page from the repository.'],
+            ['<code>ingot search &lt;term&gt;</code>', 'Search the package index.'],
+            ['<code>ingot list</code>', 'List installed packages and versions.']
+        ])
+        + docNote('Root is only needed for writes', 'Install, remove, update and reinstall write into <code>/</code>, so run them with <code>sudo</code>. <code>list</code>, <code>info</code>, <code>search</code> and <code>inspect</code> only read.'))
+        + docSection('02', 'A normal session', 'Install a browser, add a network tool, then update what changed.',
+        docCode([
+            'sudo ingot install firefox',
+            'sudo ingot install tcpdump nmap',
+            'ingot list',
+            'sudo ingot update',
+            'ingot inspect tcpdump'
+        ])
+        + '<p>Before unpacking anything, ingot checks the payload&rsquo;s SHA-256 against the package page and refuses archives containing absolute paths or <code>..</code> segments. It writes an installed manifest under <code>/var/lib/ingot/</code> so updates and removals know exactly which files belong to a package. Payloads are x86_64 Linux (glibc).</p>')
+        + docSection('03', 'Repository layout', 'The default repository is public and flat: one index plus one page per package.',
+        docCode([
+            'https://12hrformat.github.io/copper-ingot-repo/iso/copper/pkg/index.json',
+            'https://12hrformat.github.io/copper-ingot-repo/iso/copper/pkg/<category>/<name>'
+        ])
+        + '<p><code>index.json</code> maps a name to its category; the category is also the directory the page lives in. The repository URL can be overridden in <code>/etc/ingot.conf</code> or with the <code>INGOT_REPO</code> environment variable.</p>'
+        + docCode([
+            '{',
+            '  "name": "tcpdump",',
+            '  "version": "4.99.7-1",',
+            '  "category": "network",',
+            '  "url": "https://github.com/12hrformat/copper-ingot-repo/releases/download/payloads-v1/tcpdump-4.99.7-1.tar.gz",',
+            '  "size": 533377,',
+            '  "sha256": "6ae1d621c17e1931747ad6fdb31e67e8f7299437b589ed66ec580cc2d2b0e8a2",',
+            '  "depends": ["libpcap"]',
+            '}'
+        ])
+        + docNote('Format matters', 'ingot reads one key per line with a line matcher, not a JSON parser. Keep every field on its own line, put <code>depends</code> on one line, and leave <code>size</code> unquoted. A missing <code>url</code> or <code>sha256</code> means ingot refuses to install.', 'warn')
+        + docTable(['Field', 'Required', 'Shape'], [
+            ['<code>name</code>', 'yes', 'String; matches the index entry and file name.'],
+            ['<code>version</code>', 'yes', 'String.'],
+            ['<code>category</code>', 'yes', 'String; matches <code>index.json</code> and the directory.'],
+            ['<code>url</code>', 'yes', 'Direct GitHub Release asset URL; no authentication.'],
+            ['<code>sha256</code>', 'yes', '64-character hex hash of that exact tarball.'],
+            ['<code>size</code>', 'no', 'Unquoted byte count; enables the live download bar.'],
+            ['<code>depends</code>', 'no', 'Single-line array such as <code>["libpcap"]</code>, or omit it.']
+        ]))
+        + docSection('04', 'Slow downloads and mirrors', 'Release CDNs can throttle large assets, so ingot tries public mirrors first.',
+        '<p>Every source is checked against the page&rsquo;s SHA-256. A mirror that serves the wrong bytes is discarded, and the canonical URL is what gets recorded in the manifest. Choose your own prefixes or talk directly to GitHub:</p>'
+        + docCode([
+            'sudo env INGOT_MIRRORS=https://ghfast.top ingot install firefox',
+            'sudo env INGOT_MIRRORS=none ingot install firefox'
+        ]))
+        + docSection('05', 'Add a package', 'The page files are the source of truth; the index is generated from them.',
+        '<ol class="step-list">'
+        + '<li><span>01</span><div><h3>Stage the tarball</h3><p>Use <code>usr/...</code> paths relative to <code>/</code>. No leading <code>/</code>, no <code>..</code>. Add command-name symlinks yourself — nothing runs a <code>postinst</code>.</p></div></li>'
+        + '<li><span>02</span><div><h3>Upload to a Release</h3><p>Pages holds metadata, never binaries. A <code>+</code> in an asset name must be sent as <code>%2B</code>.</p></div></li>'
+        + '<li><span>03</span><div><h3>Hash the exact bytes</h3><p>Run <code>sha256sum</code> on the uploaded tarball. If you rebuild it, hash it again.</p></div></li>'
+        + '<li><span>04</span><div><h3>Write the package page</h3><p>One key per line at <code>iso/copper/pkg/&lt;category&gt;/&lt;name&gt;</code>, pretty-printed.</p></div></li>'
+        + '<li><span>05</span><div><h3>Regenerate the index</h3><p>Run <code>python3 tools/index.py</code>, then <code>python3 tools/index.py --check</code> and <code>python3 tools/audit.py</code>.</p></div></li>'
+        + '<li><span>06</span><div><h3>Open a pull request</h3><p>Pages republishes from <code>main</code> within about a minute.</p></div></li>'
+        + '</ol>')
+        + docSection('06', 'Test without touching your system', 'Point ingot at a scratch root and it runs unprivileged.',
+        docCode([
+            'INGOT_REPO="https://12hrformat.github.io/copper-ingot-repo" \\',
+            'INGOT_ROOT="$PWD/scratch" \\',
+            'sh ingot install tcpdump'
+        ])
+        + '<p>Expected output ends with <code>ingot: installed libpcap</code> and <code>ingot: installed tcpdump</code>. The files appear under <code>scratch/</code> instead of <code>/</code>. Browse the same repository on the <a href="#/ingot">ingot page</a>, and report payload problems on the <a href="#/bugs">bug tracker</a>.</p>');
+
+    return docShell('ingot guide', 'ingot<span class="intro-dot">.</span>',
+        'Commands, package pages, mirrors, adding a package, and a safe scratch-root test.',
+        body, 'ingot');
+}
+
+/* Add your own entries here. Each object can have: title, status, repo, detail,
+   url, and updated. The page renders a placeholder until this array is filled. */
+var KNOWN_BUGS = [];
+/*
+var KNOWN_BUGS = [
+    {
+        title: 'Short bug title',
+        status: 'Open',
+        repo: 'copperlinux',
+        detail: 'What happened, what you expected, and the build it happened on.',
+        url: 'https://github.com/12hrformat/copperlinux/issues/1',
+        updated: '2026-11-25'
+    }
+];
+*/
+
+var BUG_REPOS = [
+    { owner: '12hrformat', repo: 'copperlinux', label: 'copperlinux', url: 'https://github.com/12hrformat/copperlinux', scope: 'ISO, boot, first boot, desktops and core utilities' },
+    { owner: '12hrformat', repo: 'copper-ingot-repo', label: 'copper-ingot-repo', url: 'https://github.com/12hrformat/copper-ingot-repo', scope: 'Packages, payloads, the index and mirrors' },
+    { owner: '12hrformat', repo: 'copperlinux-site', label: 'copperlinux-site', url: 'https://github.com/12hrformat/copperlinux-site', scope: 'This website, its docs and the ingot browser' }
+];
+
+var BUG_REPORT_TEMPLATE = [
+    '**What happened**',
+    '',
+    '**What you expected**',
+    '',
+    '**Build / commit**',
+    '',
+    '**Hardware or VM**',
+    '',
+    '**Exact steps or commands**',
+    '',
+    '**Logs / screenshots**',
+    ''
+].join('\n');
+
+function reportBugUrl(repo) {
+    return repo.url + '/issues/new?body=' + encodeURIComponent(BUG_REPORT_TEMPLATE);
+}
+
+function pageBugs() {
+    var reportCards = BUG_REPOS.map(function (r) {
+        return '<article class="mini-card doc-card bug-report-card">'
+            + '<h3>' + escHtml(r.label) + '</h3>'
+            + '<p>' + escHtml(r.scope) + '</p>'
+            + '<div class="doc-card-more"><a href="' + reportBugUrl(r) + '" target="_blank" rel="noopener">Report here <i class="fas fa-external-link-alt"></i></a>'
+            + ' <a href="' + r.url + '/issues" target="_blank" rel="noopener">All issues</a></div>'
+            + '</article>';
+    }).join('');
+
+    var body = docSection('01', 'Report it in the right place', 'Pick the repository that owns the thing that broke.',
+        '<div class="doc-card-grid three">' + reportCards + '</div>'
+        + docNote('GitHub login needed', 'The report buttons open a pre-filled GitHub issue form. You need a GitHub account to submit it. If you are unsure which repo to use, the Copper Linux repo is the safe default.'))
+        + docSection('02', 'What to include', 'A bug report is a small experiment someone else can repeat.',
+        '<ol class="step-list">'
+        + '<li><span>01</span><div><h3>Expected and actual</h3><p>One sentence for each. Do not stop at &ldquo;it doesn&rsquo;t work&rdquo;.</p></div></li>'
+        + '<li><span>02</span><div><h3>The exact build</h3><p>ISO tag or commit, and whether you booted the default or systemd entry.</p></div></li>'
+        + '<li><span>03</span><div><h3>The machine</h3><p>Real hardware or a VM, plus the VM&rsquo;s graphics and audio settings when relevant.</p></div></li>'
+        + '<li><span>04</span><div><h3>The commands</h3><p>Copy and paste what you typed and what came back. Include the full error line.</p></div></li>'
+        + '<li><span>05</span><div><h3>One bug per issue</h3><p>Three small reports are easier to fix than one long list.</p></div></li>'
+        + '</ol>')
+        + docSection('03', 'Known issues', 'This list is maintained here. Add entries in <code>KNOWN_BUGS</code> in <code>app.js</code>.',
+        '<div id="known-bugs" class="issue-list known-bugs"><p class="dim-text">Loading known issues&hellip;</p></div>')
+        + docSection('04', 'Recent GitHub issues', 'Live from all three repositories. Pull requests are filtered out.',
+        '<div class="panel panel-default text-left issue-panel">'
+        + '<div class="panel-heading"><b>Issue feed</b><button type="button" id="bugs-refresh" class="btn btn-xs btn-xs-cl">Refresh now</button></div>'
+        + '<div class="list-group-item">'
+        + '<div id="bugs-banner"></div><div id="bugs-status" class="track-status"></div>'
+        + '<div id="bugs-feeds" class="row bug-feed"></div>'
+        + '</div></div>');
+
+    return docShell('Bug tracking', 'Bug tracker<span class="intro-dot">.</span>',
+        'Report a reproducible problem, see what is already known, and watch live issues from the project repositories.',
+        body, 'Bug tracker');
+}
+
+function renderKnownBugs() {
+    var box = document.getElementById('known-bugs');
+    if (!box) return;
+
+    if (!KNOWN_BUGS.length) {
+        box.innerHTML = '<div class="empty-state"><i class="fas fa-clipboard-list" aria-hidden="true"></i>'
+            + '<div><h3>No entries listed here yet</h3><p>Add objects to <code>KNOWN_BUGS</code> in <code>app.js</code>, or open a GitHub issue with the report buttons above.</p></div></div>';
+        return;
+    }
+
+    box.innerHTML = KNOWN_BUGS.map(function (b) {
+        var repo = BUG_REPOS.filter(function (r) { return r.label === b.repo; })[0] || BUG_REPOS[0];
+        var status = String(b.status || 'Open').toLowerCase();
+        var badge = '<span class="issue-state issue-state-' + (status === 'closed' || status === 'fixed' ? 'closed' : 'open') + '">' + escHtml(b.status || 'Open') + '</span>';
+        var meta = [];
+        if (b.repo) meta.push(escHtml(b.repo));
+        if (b.updated) meta.push(escHtml(b.updated));
+        return '<article class="issue-card known-bug">'
+            + '<div class="issue-top">' + badge + (meta.length ? '<span class="issue-number">' + meta.join(' &middot; ') + '</span>' : '') + '</div>'
+            + '<a class="issue-title" href="' + escHtml(b.url || reportBugUrl(repo)) + '" target="_blank" rel="noopener">' + escHtml(b.title || 'Untitled issue') + '</a>'
+            + (b.detail ? '<p class="issue-detail">' + escHtml(b.detail) + '</p>' : '')
+            + '</article>';
+    }).join('');
+}
+
+function issueRepoPanel(r) {
+    return '<div class="col-md-4 bug-col">'
+        + '<div class="panel panel-default text-left issue-panel">'
+        + '<div class="panel-heading"><b>' + escHtml(r.label) + '</b>'
+        + '<a class="repo-link" href="' + r.url + '/issues" target="_blank" rel="noopener">All &rarr;</a></div>'
+        + '<div class="list-group-item">'
+        + '<p class="issue-repo-desc">' + escHtml(r.scope) + '</p>'
+        + '<div class="issue-list" data-repo="' + escHtml(r.owner + '/' + r.repo) + '"><p class="dim-text">Loading issues&hellip;</p></div>'
+        + '</div></div></div>';
+}
+
+function issueCard(i) {
+    var open = i.state === 'open';
+    var state = '<span class="issue-state issue-state-' + (open ? 'open' : 'closed') + '">' + (open ? 'Open' : 'Closed') + '</span>';
+    var labels = (i.labels || []).slice(0, 3).map(function (l) {
+        return '<span class="issue-label">' + escHtml(l.name || '') + '</span>';
+    }).join('');
+    var meta = ['#' + escHtml(i.number || '')];
+    if (i.updated_at) meta.push(escHtml(timeAgo(i.updated_at)));
+    if (i.comments) meta.push('<i class="fas fa-comment" aria-hidden="true"></i> ' + escHtml(i.comments));
+
+    return '<article class="issue-card">'
+        + '<div class="issue-top">' + state + '<span class="issue-number">' + meta.join(' &middot; ') + '</span></div>'
+        + '<a class="issue-title" href="' + escHtml(i.html_url || '') + '" target="_blank" rel="noopener">' + escHtml(i.title || '(no title)') + '</a>'
+        + (labels ? '<div class="issue-labels">' + labels + '</div>' : '')
+        + '</article>';
+}
+
+function loadIssues() {
+    var feed = document.getElementById('bugs-feeds');
+    var status = document.getElementById('bugs-status');
+    var banner = document.getElementById('bugs-banner');
+    if (!feed) return;
+
+    if (banner) banner.innerHTML = '';
+    if (status) status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching latest issues&hellip;';
+    feed.innerHTML = BUG_REPOS.map(issueRepoPanel).join('');
+
+    var remaining = BUG_REPOS.length;
+    BUG_REPOS.forEach(function (r) {
+        loadRepoIssues(r).then(function () {
+            remaining--;
+            if (remaining <= 0 && status) status.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+        });
+    });
+}
+
+async function loadRepoIssues(r) {
+    var box = document.querySelector('.issue-list[data-repo="' + r.owner + '/' + r.repo + '"]');
+    if (!box) return;
+
+    var cacheKey = 'issues:' + r.owner + '/' + r.repo;
+    try {
+        var path = '/repos/' + r.owner + '/' + r.repo + '/issues?state=all&sort=updated&per_page=12';
+        var issues = await ghGet(path);
+        var reports = (Array.isArray(issues) ? issues : []).filter(function (i) { return !i.pull_request; }).slice(0, 6);
+        if (!reports.length) {
+            box.innerHTML = '<p class="dim-text">No issues yet. <a href="' + reportBugUrl(r) + '" target="_blank" rel="noopener">Open the first one</a>.</p>';
+            return;
+        }
+        box.innerHTML = reports.map(issueCard).join('');
+        try { localStorage.setItem(cacheKey, JSON.stringify({ t: Date.now(), html: box.innerHTML })); } catch (e) { /* storage unavailable */ }
+    } catch (e) {
+        if (e && e.message === 'rate limited') markRateLimited();
+        var why = (e && e.message === 'not found')
+            ? 'That repository does not exist yet.'
+            : 'Could not reach the GitHub API (rate limit or network).';
+        var cached = null;
+        try { cached = JSON.parse(localStorage.getItem(cacheKey) || 'null'); } catch (e2) { cached = null; }
+        if (cached && cached.html && cached.html.indexOf('issue-card') > -1) {
+            box.innerHTML = '<p class="dim-text track-warn"><i class="fas fa-exclamation-triangle"></i> GitHub rate limit hit — showing last known issues.</p>' + cached.html;
+        } else {
+            box.innerHTML = '<p class="dim-text">' + why + ' <a href="' + r.url + '/issues" target="_blank" rel="noopener">Check GitHub directly</a>.</p>';
+        }
+    }
 }
 
 function page404() {

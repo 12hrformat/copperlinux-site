@@ -136,7 +136,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-	<link href="css/copper.css?v=11" rel="stylesheet">
+	<link href="css/copper.css?v=12" rel="stylesheet">
 	<link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 	<noscript><style>html.copper-loading .copper-loader{display:none!important}html.copper-loading body{overflow:auto!important}</style></noscript>
@@ -327,6 +327,16 @@
 					<li id="nav-home"><a href="#/">Home</a></li>
 					<li id="nav-daily"><a href="#/daily-driving">Copper</a></li>
 					<li id="nav-ingot"><a href="#/ingot">ingot</a></li>
+					<li id="nav-docs" class="dropdown">
+						<a href="#/docs" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Docs <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li id="nav-docs-home"><a href="#/docs">Overview</a></li>
+							<li id="nav-docs-copper"><a href="#/docs/copper">Copper Linux</a></li>
+							<li id="nav-docs-ingot"><a href="#/docs/ingot">ingot</a></li>
+							<li role="separator" class="divider"></li>
+							<li id="nav-bugs"><a href="#/bugs">Bug tracker</a></li>
+						</ul>
+					</li>
 					<li id="nav-downloads"><a href="#/downloads">Download</a></li>
 					<li id="nav-contributions"><a href="#/contributions">Contribute</a></li>
 					<li id="nav-contributors"><a href="#/contributors">Team</a></li>
@@ -381,6 +391,10 @@
 			<p class="static-links">
 				<a href="#/daily-driving">Copper — daily driving</a> &middot;
 				<a href="#/ingot">ingot packages</a> &middot;
+				<a href="#/docs">Documentation</a> &middot;
+				<a href="#/docs/copper">Copper guide</a> &middot;
+				<a href="#/docs/ingot">ingot guide</a> &middot;
+				<a href="#/bugs">Bug tracker</a> &middot;
 				<a href="#/downloads">Downloads</a> &middot;
 				<a href="#/contributions">Contribute</a> &middot;
 				<a href="#/contributors">Team</a> &middot;
@@ -405,13 +419,13 @@
 				</div>
 			</div>
 			<div class="cl-footer-bottom">
-				<span>Copper Linux</span><span>2026</span><span>Open source &middot; x86_64</span><span>Pre-releases out now</span>
+				<span>Copper Linux</span><span>2026</span><span>Open source &middot; x86_64</span><span><a href="#/docs">Docs</a> &middot; <a href="#/docs/copper">Copper</a> &middot; <a href="#/docs/ingot">ingot</a> &middot; <a href="#/bugs">Bugs</a></span><span>Pre-releases out now</span>
 			</div>
 		</div>
 	</footer>
 
 	<script type="text/javascript" src="js/jquery.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="app.js?v=6"></script>
+	<script type="text/javascript" src="app.js?v=7"></script>
 </body>
 </html>

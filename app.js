@@ -125,6 +125,7 @@ function navigate(instant) {
         bindPageInteractions(hash);
         initReveal();
         animateCounters();
+        initTerminal();
         window.scrollTo(0, 0);
 
         app.classList.remove('is-leaving');
@@ -290,6 +291,18 @@ function animateCounters() {
     for (var i = 0; i < nums.length; i++) animateCounter(nums[i]);
 }
 
+/* ------------------------------------------------------------------
+   hero terminal — a tiny, on-brand typewriter
+   ------------------------------------------------------------------ */
+var termTimer = null;
+
+var TERMINAL_SCRIPT = [
+    { cmd: 'ingot install firefox', out: 'ingot: installed firefox\n57 packages ready to use' },
+    { cmd: 'ingot update',          out: 'ingot: 3 packages updated' },
+    { cmd: 'ingot install nmap',    out: 'ingot: installed libpcap\ningot: installed nmap' },
+    { cmd: 'fastfetch',             out: 'OS: Copper Linux x86_64\nShell: bash\nWM: niri / xfce' }
+];
+
 /* keep the hero loop calm for people who asked for less motion */
 function initHeroVideo() {
     var video = document.querySelector('.hero-video');
@@ -303,6 +316,37 @@ function initHeroVideo() {
 
     var playing = video.play();
     if (playing && playing.catch) playing.catch(function () { /* autoplay blocked */ });
+}
+
+function initTerminal() {
+    var out = document.getElementById('terminal-output');
+    if (!out) return;
+
+    var line = 0, chars = 0, hold = 0, phase = 'typing';
+    var current = TERMINAL_SCRIPT[0];
+
+    if (reduceMotion()) {
+        out.textContent = '$ ' + current.cmd + '\n' + current.out;
+        return;
+    }
+
+    function tick() {
+        if (phase === 'typing') {
+            chars++;
+            out.textContent = '$ ' + current.cmd.slice(0, chars);
+            if (chars >= current.cmd.length) { phase = 'result'; hold = 0; }
+        } else {
+            out.textContent = '$ ' + current.cmd + '\n' + current.out;
+            hold++;
+            if (hold > 30) {
+                line = (line + 1) % TERMINAL_SCRIPT.length;
+                current = TERMINAL_SCRIPT[line];
+                chars = 0; phase = 'typing';
+                out.textContent = '';
+            }
+        }
+    }
+    termTimer = setInterval(tick, 55);
 }
 
 /* ------------------------------------------------------------------
@@ -813,6 +857,11 @@ function heroVideo() {
         +   '<video class="hero-video" autoplay muted loop playsinline preload="metadata" disablepictureinpicture>'
         +     '<source src="assets/liquid-logo.mp4" type="video/mp4">'
         +   '</video>'
+        + '</div>'
+        + '<div class="terminal-card">'
+        + '<div class="terminal-bar"><span class="term-dots"><i></i><i></i><i></i></span>'
+        + '<span>copper@laptop: ~</span><span class="term-tag">ingot</span></div>'
+        + '<pre id="terminal-output" class="terminal-output">$ ingot install firefox</pre>'
         + '</div></div>';
 }
 

@@ -95,11 +95,11 @@ and the bug tracker (`#/bugs`). Page copy lives in the `docShell()`,
 `docSection()`, `docTable()` and `docCode()` helpers near the bottom of
 `app.js`, so it can be edited without touching the router.
 
-The **Known issues** block on `#/bugs` is intentionally empty. Add objects to
-`KNOWN_BUGS` in `app.js` to fill it; each entry can have `title`, `status`,
-`repo`, `detail`, `url` and `updated`. The page also shows live GitHub issues
-from `copperlinux`, `copper-ingot-repo` and `copperlinux-site`, with pull
-requests filtered out. Report buttons open pre-filled GitHub issue forms.
+The `#/bugs` page pulls open issues from `copperlinux` and `copper-ingot-repo`
+every minute through the GitHub API; pull requests are skipped. Each repository
+shows its issue titles as links straight to GitHub. When a repository has no
+open issues, the tracker prints `no bugs!!! (yet)`. Report buttons open
+pre-filled GitHub issue forms.
 
 ### Live GitHub data
 
@@ -203,7 +203,7 @@ At 390 px wide there is no horizontal overflow.
 | Nav links | `index.html` navbar block. |
 | Page copy | Page functions in `app.js` **and** the static copy in `index.html` — keep them in sync. |
 | Documentation copy | `docShell()` / `docSection()` page functions in `app.js`. |
-| Known bug entries | `KNOWN_BUGS` in `app.js` — intentionally left for the maintainer to fill. |
+| Live issue feed | `BUG_REPOS` and `NO_BUGS_TEXT` in `app.js`. |
 | Route titles/descriptions | `TITLES` / `DESCRIPTIONS` in `app.js`. |
 | Team list | `TEAM` in `app.js`. |
 | ingot sources | `INGOT_REPO_URL`, `INGOT_RAW`, `INGOT_CATS` in `app.js`. |

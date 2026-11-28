@@ -886,12 +886,7 @@ function heroVideo() {
         +   '<video class="hero-video" autoplay muted loop playsinline preload="metadata" disablepictureinpicture>'
         +     '<source src="assets/liquid-logo.mp4" type="video/mp4">'
         +   '</video>'
-        + '</div>'
-        + '<div class="terminal-card">'
-        + '<div class="terminal-bar"><span class="term-dots"><i></i><i></i><i></i></span>'
-        + '<span>copper@laptop: ~</span><span class="term-tag">ingot</span></div>'
-        + '<pre id="terminal-output" class="terminal-output">$ ingot install firefox</pre>'
-        + '</div></div>';
+        + '</div>';
 }
 
 /* ------------------------------------------------------------------

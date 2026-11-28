@@ -123,7 +123,6 @@ function initTheme() {
 function navigate(instant) {
     stopTrackPolling();
     stopIssuePolling();
-    if (termTimer) { clearInterval(termTimer); termTimer = null; }
 
     var hash = getHash();
     var app  = document.getElementById('app');
@@ -138,7 +137,6 @@ function navigate(instant) {
         bindPageInteractions(hash);
         initReveal();
         animateCounters();
-        initTerminal();
         window.scrollTo(0, 0);
 
         app.classList.remove('is-leaving');
@@ -316,18 +314,6 @@ function animateCounters() {
     for (var i = 0; i < nums.length; i++) animateCounter(nums[i]);
 }
 
-/* ------------------------------------------------------------------
-   hero terminal — a tiny, on-brand typewriter
-   ------------------------------------------------------------------ */
-var termTimer = null;
-
-var TERMINAL_SCRIPT = [
-    { cmd: 'ingot install firefox', out: 'ingot: installed firefox\n57 packages ready to use' },
-    { cmd: 'ingot update',          out: 'ingot: 3 packages updated' },
-    { cmd: 'ingot install nmap',    out: 'ingot: installed libpcap\ningot: installed nmap' },
-    { cmd: 'fastfetch',             out: 'OS: Copper Linux x86_64\nShell: bash\nWM: niri / xfce' }
-];
-
 /* keep the hero loop calm for people who asked for less motion */
 function initHeroVideo() {
     var video = document.querySelector('.hero-video');
@@ -341,37 +327,6 @@ function initHeroVideo() {
 
     var playing = video.play();
     if (playing && playing.catch) playing.catch(function () { /* autoplay blocked */ });
-}
-
-function initTerminal() {
-    var out = document.getElementById('terminal-output');
-    if (!out) return;
-
-    var line = 0, chars = 0, hold = 0, phase = 'typing';
-    var current = TERMINAL_SCRIPT[0];
-
-    if (reduceMotion()) {
-        out.textContent = '$ ' + current.cmd + '\n' + current.out;
-        return;
-    }
-
-    function tick() {
-        if (phase === 'typing') {
-            chars++;
-            out.textContent = '$ ' + current.cmd.slice(0, chars);
-            if (chars >= current.cmd.length) { phase = 'result'; hold = 0; }
-        } else {
-            out.textContent = '$ ' + current.cmd + '\n' + current.out;
-            hold++;
-            if (hold > 30) {
-                line = (line + 1) % TERMINAL_SCRIPT.length;
-                current = TERMINAL_SCRIPT[line];
-                chars = 0; phase = 'typing';
-                out.textContent = '';
-            }
-        }
-    }
-    termTimer = setInterval(tick, 55);
 }
 
 /* ------------------------------------------------------------------
@@ -880,7 +835,6 @@ function crumbs(current) {
 /* looping liquid logo beside the title; Cu shows through if the video cannot load */
 function heroVideo() {
     return '<div class="hero-art hero-art-video" aria-hidden="true">'
-        + '<div class="ingot-halo"></div>'
         + '<div class="hero-video-frame">'
         +   '<span class="video-fallback">Cu</span>'
         +   '<video class="hero-video" autoplay muted loop playsinline preload="metadata" disablepictureinpicture>'
@@ -898,9 +852,9 @@ function pageHome() {
         '  <div class="hero-grid" aria-hidden="true"></div>',
         '  <div class="container hero-inner">',
         '    <div class="hero-copy">',
-        '      <p class="eyebrow"><span class="pulse"></span> Independent Linux distribution &middot; x86_64 &middot; Open source</p>',
+        '      <p class="eyebrow">Independent Linux distribution &middot; x86_64 &middot; Open source</p>',
         '      <h1 class="hero-title"><span class="hero-title-solid">Copper</span><span class="hero-title-outline">Linux<i>.</i></span></h1>',
-        '      <p class="hero-lead">A small, fast desktop distribution built by one person and a few contributors. Ethernet works, the desktop boots clean, and <a href="#/ingot">ingot</a> installs the tools you need.</p>',
+        '      <p class="hero-lead">A small, fast desktop distribution built by one maintainer and a few contributors. Ethernet works, the desktop boots clean, and <a href="#/ingot">ingot</a> installs the tools you need.</p>',
         '      <div class="hero-actions">',
         '        <a class="btn btn-primary-cl" href="https://github.com/12hrformat/copperlinux/releases/latest" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download Copper Linux</a>',
         '        <a class="btn btn-ghost-cl" href="#/ingot">Explore ingot <i class="fas fa-arrow-right"></i></a>',
@@ -914,8 +868,7 @@ function pageHome() {
         '  </div>',
         '</header>',
         '<div class="ticker" aria-hidden="true"><div class="ticker-track">',
-        '  <span>NO TELEMETRY</span><b>&#9670;</b><span>BUILT FROM SCRATCH</span><b>&#9670;</b><span>INGOT PACKAGE MANAGER</span><b>&#9670;</b><span>X86_64</span><b>&#9670;</b><span>OPEN SOURCE</span><b>&#9670;</b>',
-        '  <span>NO TELEMETRY</span><b>&#9670;</b><span>BUILT FROM SCRATCH</span><b>&#9670;</b><span>INGOT PACKAGE MANAGER</span><b>&#9670;</b><span>X86_64</span><b>&#9670;</b><span>OPEN SOURCE</span><b>&#9670;</b>',
+        '  <span>No telemetry</span><b>&#9670;</b><span>Built in public</span><b>&#9670;</b><span>ingot package manager</span><b>&#9670;</b><span>x86_64</span><b>&#9670;</b><span>Open source</span>',
         '</div></div>',
         '<div class="container site-content">',
         '  <div class="stat-strip">',
@@ -926,10 +879,10 @@ function pageHome() {
         '  </div>',
         '  ', sectionHead('01 / The idea', 'Why Copper', 'A distro that stays out of the way and gives you a machine you actually own.'),
         '  <div class="feature-grid">',
-        '    <article class="feature-card"><span class="feature-num">01</span><i class="fas fa-bolt feature-icon"></i><h3>Fast by default</h3><p>BusyBox roots and a lean live image. Boot to a usable desktop without waiting on a bunch of services you never asked for.</p></article>',
-        '    <article class="feature-card"><span class="feature-num">02</span><i class="fas fa-cube feature-icon"></i><h3>ingot packages</h3><p>Copper has its own package manager and its own repository: tools, desktop apps, network utilities, libs and fonts. One command, verified payloads.</p></article>',
-        '    <article class="feature-card"><span class="feature-num">03</span><i class="fas fa-desktop feature-icon"></i><h3>A real desktop</h3><p>Browser, terminal, editor, file manager. Pick XFCE or the niri Wayland session at first boot and get straight to work.</p></article>',
-        '    <article class="feature-card"><span class="feature-num">04</span><i class="fas fa-code-branch feature-icon"></i><h3>Built in public</h3><p>One maintainer, a few contributors, all development on GitHub. Read the code, open an issue, or send the fix yourself.</p></article>',
+        '    <article class="feature-card"><span class="feature-num">01</span><h3>Fast by default</h3><p>BusyBox roots and a lean live image. Boot to a usable desktop without waiting on a bunch of services you never asked for.</p></article>',
+        '    <article class="feature-card"><span class="feature-num">02</span><h3>ingot packages</h3><p>Copper has its own package manager and its own repository: tools, desktop apps, network utilities, libs and fonts. One command, verified payloads.</p></article>',
+        '    <article class="feature-card"><span class="feature-num">03</span><h3>A real desktop</h3><p>Browser, terminal, editor, file manager. Pick XFCE or the niri Wayland session at first boot and get straight to work.</p></article>',
+        '    <article class="feature-card"><span class="feature-num">04</span><h3>Built in public</h3><p>One maintainer, a few contributors, all development on GitHub. Read the code, open an issue, or send the fix yourself.</p></article>',
         '  </div>',
         '  <div class="section-head"><p class="section-kicker">02 / The package manager</p><h2>Meet ingot</h2><p class="section-sub">Copper Linux ships with its own package manager. The <a href="https://github.com/12hrformat/copper-ingot-repo" target="_blank" rel="noopener">copper-ingot-repo</a> holds every packaged tool, and you can browse all of them right here.</p></div>',
         '  <div class="ingot-feature">',
@@ -1013,7 +966,7 @@ function pageIngot() {
         + sectionHead('Package browser', 'The tools in ingot', 'Live from copper-ingot-repo. Search by name, command or dependency, then open any package page.')
         + '<div class="explorer">'
         + '  <div class="explorer-toolbar">'
-        + '    <label class="search-field"><i class="fas fa-search"></i><input type="text" id="pkg-search" placeholder="Search packages, commands, dependencies&hellip;" oninput="searchIngot()" autocomplete="off"></label>'
+        + '    <label class="search-field"><i class="fas fa-search"></i><input type="text" id="pkg-search" placeholder="Search packages" oninput="searchIngot()" autocomplete="off"></label>'
         + '    <span class="pkg-count" id="pkg-count">loading&hellip;</span>'
         + '  </div>'
         + '  <div class="filter-row">'
@@ -1035,7 +988,7 @@ function pageDownloads() {
     return '<div class="container site-content">'
         + crumbs('Download')
         + pageIntro('Get Copper Linux', 'Download', 'Copper Linux pre-releases are published on GitHub. The latest link always points at the newest build.')
-        + '<div class="download-hero"><div><p class="section-kicker">Latest build</p><h2>Copper Linux pre-release</h2><p>Every build we cut is public. No sign-up, no mirror maze — just the ISO and the source.</p><a class="btn btn-primary-cl" href="https://github.com/12hrformat/copperlinux/releases/latest" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download the latest ISO</a></div><div class="download-side"><i class="fas fa-compact-disc"></i><span>x86_64</span><span>live ISO</span><span>open source</span></div></div>'
+        + '<div class="download-hero"><div><p class="section-kicker">Latest build</p><h2>Copper Linux pre-release</h2><p>Every build we cut is public. No sign-up, no mirror maze — just the ISO and the source.</p><a class="btn btn-primary-cl" href="https://github.com/12hrformat/copperlinux/releases/latest" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download the latest ISO</a></div><div class="download-side"><span>x86_64</span><span>live ISO</span><span>open source</span></div></div>'
         + sectionHead('Before you boot', 'How to run it', 'A few things worth knowing before you write an image to a USB stick.')
         + '<div class="content-grid three-col">'
         + '  <article class="mini-card"><span class="feature-num">01</span><h3>Grab the ISO</h3><p>Download the newest pre-release from the <a href="https://github.com/12hrformat/copperlinux/releases" target="_blank" rel="noopener">releases page</a>, or build from the <a href="https://github.com/12hrformat/copperlinux/archive/refs/heads/main.zip" target="_blank" rel="noopener">main branch</a>.</p></article>'
@@ -1052,10 +1005,10 @@ function pageContributions() {
         + pageIntro('Open source, all of it', 'Contribute', 'One maintainer and a few contributors build Copper Linux in public. There is plenty of room to help.')
         + sectionHead('Where help lands', 'What we need', 'Pick whatever you are good at. All of it moves the distro forward.')
         + '<div class="content-grid">'
-        + '  <article class="mini-card"><i class="fas fa-code feature-icon"></i><h3>Code</h3><p>Find a bug and fix it. Core utilities and the image build are always worth a look.</p></article>'
-        + '  <article class="mini-card"><i class="fas fa-bug feature-icon"></i><h3>Bug reports</h3><p>Something broke? Tell us exactly what you did and what happened next.</p></article>'
-        + '  <article class="mini-card"><i class="fas fa-flask feature-icon"></i><h3>Testing</h3><p>Boot a pre-release on weird hardware and report what explodes.</p></article>'
-        + '  <article class="mini-card"><i class="fas fa-box feature-icon"></i><h3>ingot packages</h3><p>Add a package page and payload to <a href="https://github.com/12hrformat/copper-ingot-repo" target="_blank" rel="noopener">copper-ingot-repo</a>, then regenerate the index.</p></article>'
+        + '  <article class="mini-card"><h3>Code</h3><p>Find a bug and fix it. Core utilities and the image build are always worth a look.</p></article>'
+        + '  <article class="mini-card"><h3>Bug reports</h3><p>Something broke? Tell us exactly what you did and what happened next.</p></article>'
+        + '  <article class="mini-card"><h3>Testing</h3><p>Boot a pre-release on weird hardware and report what explodes.</p></article>'
+        + '  <article class="mini-card"><h3>ingot packages</h3><p>Add a package page and payload to <a href="https://github.com/12hrformat/copper-ingot-repo" target="_blank" rel="noopener">copper-ingot-repo</a>, then regenerate the index.</p></article>'
         + '</div>'
         + sectionHead('The flow', 'How it works', 'The usual GitHub loop. No ceremony.')
         + '<ol class="step-list">'

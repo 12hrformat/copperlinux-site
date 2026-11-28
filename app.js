@@ -884,7 +884,7 @@ function heroVideo() {
         + '<div class="hero-video-frame">'
         +   '<span class="video-fallback">Cu</span>'
         +   '<video class="hero-video" autoplay muted loop playsinline preload="metadata" disablepictureinpicture>'
-        +     '<source src="assets/liquid-logo.mp4" type="video/mp4">'
+        +     '<source src="assets/liquid-logo.mp4?v=2" type="video/mp4">'
         +   '</video>'
         + '</div>';
 }

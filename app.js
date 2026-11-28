@@ -856,7 +856,7 @@ function pageHome() {
         '      <h1 class="hero-title"><span class="hero-title-solid">Copper</span><span class="hero-title-outline">Linux<i>.</i></span></h1>',
         '      <p class="hero-lead">A small, fast desktop distribution built by one maintainer and a few contributors. Ethernet works, the desktop boots clean, and <a href="#/ingot">ingot</a> installs the tools you need.</p>',
         '      <div class="hero-actions">',
-        '        <a class="btn btn-primary-cl" href="https://github.com/12hrformat/copperlinux/releases/latest" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download Copper Linux</a>',
+        '        <a class="btn btn-primary-cl" href="https://github.com/12hrformat/copperlinux/actions/runs/46152102633/artifacts/15265369635" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download Copper Linux</a>',
         '        <a class="btn btn-ghost-cl" href="#/ingot">Explore ingot <i class="fas fa-arrow-right"></i></a>',
         '      </div>',
         '      <div class="hero-meta">',
@@ -900,7 +900,7 @@ function pageHome() {
         '  </div>',
         '  ', sectionHead('03 / Releases', 'Download Copper Linux', 'Pre-releases are published on GitHub. Grab the newest ISO and boot it in a VM.'),
         '  <div id="release-list" class="release-list"><p class="dim-text">Loading releases&hellip;</p></div>',
-        '  <div class="download-strip"><div><p class="section-kicker">Ready to try it?</p><h3>Get the latest Copper Linux ISO</h3></div><a class="btn btn-primary-cl" href="https://github.com/12hrformat/copperlinux/releases/latest" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download now</a></div>',
+        '  <div class="download-strip"><div><p class="section-kicker">Ready to try it?</p><h3>Get the latest Copper Linux ISO</h3></div><a class="btn btn-primary-cl" href="https://github.com/12hrformat/copperlinux/actions/runs/46152102633/artifacts/15265369635" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download now</a></div>',
         '  ', sectionHead('04 / Questions', 'Good to know', 'The short answers, before you go digging through the repo.'),
         '  <div class="faq-list">',
         '    <details class="faq-item" open><summary>What is Copper Linux?<i class="fas fa-plus"></i></summary><p>Copper Linux is a small, fast, independent Linux distribution for daily use. It is built by one maintainer with a few contributors and ships with ingot, Copper&rsquo;s own package manager.</p></details>',
@@ -918,7 +918,7 @@ function pageHome() {
         '      <div class="step"><span class="step-num">2</span><h3>Boot it and break it</h3><p>Run it on real hardware and write down everything that misbehaves.</p></div>',
         '      <div class="step"><span class="step-num">3</span><h3>Report it or fix it</h3><p>Open an issue, send a pull request, or package a tool for ingot.</p></div>',
         '    </div>',
-        '    <div class="band-actions"><a class="btn btn-band" href="https://github.com/12hrformat/copperlinux/releases" target="_blank" rel="noopener">Download a pre-release</a><a class="btn btn-band-ghost" href="#/contributions">How to contribute</a></div>',
+        '    <div class="band-actions"><a class="btn btn-band" href="https://github.com/12hrformat/copperlinux/actions/runs/46152102633/artifacts/15265369635" target="_blank" rel="noopener">Download a pre-release</a><a class="btn btn-band-ghost" href="#/contributions">How to contribute</a></div>',
         '  </section>',
         '</div>'
     ].join('');
@@ -988,7 +988,7 @@ function pageDownloads() {
     return '<div class="container site-content">'
         + crumbs('Download')
         + pageIntro('Get Copper Linux', 'Download', 'Copper Linux pre-releases are published on GitHub. The latest link always points at the newest build.')
-        + '<div class="download-hero"><div><p class="section-kicker">Latest build</p><h2>Copper Linux pre-release</h2><p>Every build we cut is public. No sign-up, no mirror maze — just the ISO and the source.</p><a class="btn btn-primary-cl" href="https://github.com/12hrformat/copperlinux/releases/latest" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download the latest ISO</a></div><div class="download-side"><span>x86_64</span><span>live ISO</span><span>open source</span></div></div>'
+        + '<div class="download-hero"><div><p class="section-kicker">Latest build</p><h2>Copper Linux pre-release</h2><p>Every build we cut is public. No sign-up, no mirror maze — just the ISO and the source.</p><a class="btn btn-primary-cl" href="https://github.com/12hrformat/copperlinux/actions/runs/46152102633/artifacts/15265369635" target="_blank" rel="noopener"><i class="fas fa-download"></i> Download the latest ISO</a></div><div class="download-side"><span>x86_64</span><span>live ISO</span><span>open source</span></div></div>'
         + sectionHead('Before you boot', 'How to run it', 'A few things worth knowing before you write an image to a USB stick.')
         + '<div class="content-grid three-col">'
         + '  <article class="mini-card"><span class="feature-num">01</span><h3>Grab the ISO</h3><p>Download the newest pre-release from the <a href="https://github.com/12hrformat/copperlinux/releases" target="_blank" rel="noopener">releases page</a>, or build from the <a href="https://github.com/12hrformat/copperlinux/archive/refs/heads/main.zip" target="_blank" rel="noopener">main branch</a>.</p></article>'
